@@ -1,7 +1,6 @@
-
-'''
+"""
 MAP Client Plugin Step
-'''
+"""
 from os import mkdir
 from os import path
 import sys
@@ -29,14 +28,14 @@ def nostdout():
 
 
 class GuccioneCubeSimulationStep(WorkflowStepMountPoint):
-    '''
+    """
     Skeleton step which is intended to be a helpful starting point
     for new steps.
-    '''
+    """
 
     def __init__(self, location):
         super(GuccioneCubeSimulationStep, self).__init__('Guccione Cube Simulation', location)
-        self._configured = False # A step cannot be executed until it has been configured.
+        self._configured = False    # A step cannot be executed until it has been configured.
         self._category = 'Registration'
         # Add any other initialisation code here:
         self._icon = QtGui.QImage(':/guccionecubesimulationstep/images/registration.png')
@@ -54,13 +53,14 @@ class GuccioneCubeSimulationStep(WorkflowStepMountPoint):
                       'http://physiomeproject.org/workflow/1.0/rdf-schema#provides',
                       'http://physiomeproject.org/workflow/1.0/rdf-schema#guccione_results_location'))
         # Port data:
-        self._portData0 = None # http://physiomeproject.org/workflow/1.0/rdf-schema#file_location
-        self._portData1 = None # python#dict
-        self._portData2 = None # http://physiomeproject.org/workflow/1.0/rdf-schema#directory_location
-        self._portData3 = None # http://physiomeproject.org/workflow/1.0/rdf-schema#directory_location
+        self._portData0 = None  # http://physiomeproject.org/workflow/1.0/rdf-schema#file_location
+        self._portData1 = None  # python#dict
+        self._portData2 = None  # http://physiomeproject.org/workflow/1.0/rdf-schema#directory_location
+        self._portData3 = None  # http://physiomeproject.org/workflow/1.0/rdf-schema#directory_location
         # Config:
-        self._config = {}
-        self._config['identifier'] = ''
+        self._config = {
+            'identifier': ''
+        }
 
     def execute(self):
         """
@@ -87,8 +87,8 @@ class GuccioneCubeSimulationStep(WorkflowStepMountPoint):
                                float(self._portData1['c2']),
                                float(self._portData1['c3']),
                                float(self._portData1['c4'])]
-        resultsFibre = []
-        resultsCross = []
+        # resultsFibre = []
+        # resultsCross = []
 
         try:
             QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
@@ -101,10 +101,11 @@ class GuccioneCubeSimulationStep(WorkflowStepMountPoint):
             # Always unset
             QtWidgets.QApplication.restoreOverrideCursor()
 
-        results = {}
-        results["materialParameters"] = material_parameters
-        results["fibre"] = resultsFibre
-        results["cross"] = resultsCross
+        results = {
+            "materialParameters": material_parameters,
+            "fibre": resultsFibre,
+            "cross": resultsCross
+        }
 
         results_file = path.join(self._portData3, 'results.json')
         with open(results_file, 'w') as f:
@@ -113,36 +114,36 @@ class GuccioneCubeSimulationStep(WorkflowStepMountPoint):
         self._doneExecution()
 
     def setPortData(self, index, dataIn):
-        '''
+        """
         Add your code here that will set the appropriate objects for this step.
         The index is the index of the port in the port list.  If there is only one
         uses port for this step then the index can be ignored.
-        '''
+        """
         if index == 0:
             self._portData0 = dataIn
         elif index == 1:
-            self._portData1 = dataIn # python#dict
+            self._portData1 = dataIn    # python#dict
         else:
             if not path.isabs(dataIn):
                 dataIn = path.abspath(path.join(self._location, dataIn))
             self._portData2 = dataIn
 
     def getPortData(self, index):
-        '''
+        """
         Add your code here that will return the appropriate objects for this step.
         The index is the index of the port in the port list.  If there is only one
         provides port for this step then the index can be ignored.
-        '''
-        return self._portData3 # http://physiomeproject.org/workflow/1.0/rdf-schema#directory_location
+        """
+        return self._portData3  # http://physiomeproject.org/workflow/1.0/rdf-schema#directory_location
 
     def configure(self):
-        '''
+        """
         This function will be called when the configure icon on the step is
         clicked.  It is appropriate to display a configuration dialog at this
         time.  If the conditions for the configuration of this step are complete
         then set:
             self._configured = True
-        '''
+        """
         # dlg = ConfigureDialog(QtWidgets.QApplication.activeWindow().currentWidget())
         dlg = ConfigureDialog(QtWidgets.QApplication.activeWindow())
         dlg.identifierOccursCount = self._identifierOccursCount
@@ -157,35 +158,32 @@ class GuccioneCubeSimulationStep(WorkflowStepMountPoint):
         self._configuredObserver()
 
     def getIdentifier(self):
-        '''
+        """
         The identifier is a string that must be unique within a workflow.
-        '''
+        """
         return self._config['identifier']
 
     def setIdentifier(self, identifier):
-        '''
+        """
         The framework will set the identifier for this step when it is loaded.
-        '''
+        """
         self._config['identifier'] = identifier
 
     def serialize(self):
-        '''
+        """
         Add code to serialize this step to string.  This method should
         implement the opposite of 'deserialize'.
-        '''
+        """
         return json.dumps(self._config, default=lambda o: o.__dict__, sort_keys=True, indent=4)
 
-
     def deserialize(self, string):
-        '''
+        """
         Add code to deserialize this step from string.  This method should
         implement the opposite of 'serialize'.
-        '''
+        """
         self._config.update(json.loads(string))
 
         d = ConfigureDialog()
         d.identifierOccursCount = self._identifierOccursCount
         d.setConfig(self._config)
         self._configured = d.validate()
-
-
