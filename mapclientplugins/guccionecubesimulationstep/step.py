@@ -91,7 +91,7 @@ class GuccioneCubeSimulationStep(WorkflowStepMountPoint):
         # resultsCross = []
 
         try:
-            QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+            QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.CursorShape.WaitCursor)
             with nostdout():
                 resultsFibre = simulate(0.0, material_parameters, self._portData0, output_dir=self._portData3)
 
